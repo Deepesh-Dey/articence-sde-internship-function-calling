@@ -3,7 +3,7 @@ Voice-specific optimizations for the Universal Data Connector.
 Summarization and context messages for voice conversations.
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any, Dict, List
 
 from app.models.analytics import AnalyticsPoint
@@ -74,11 +74,11 @@ def get_freshness_message(updated_at: datetime | None = None) -> str:
     Human-readable freshness indicator for voice.
     """
     if updated_at:
-        delta = datetime.utcnow() - updated_at
+        delta = datetime.now(UTC) - updated_at
         hours = delta.total_seconds() / 3600
         if hours < 1:
             return "Data as of a few minutes ago"
         if hours < 24:
             return f"Data as of {int(hours)} hours ago"
         return f"Data as of {int(hours / 24)} days ago"
-    return f"Data as of {datetime.utcnow().isoformat()}Z"
+    return f"Data as of {datetime.now(UTC).isoformat()}"

@@ -72,9 +72,12 @@ class TestCRMConnector:
         assert result[0].name == "Test Customer"
         assert result[0].status == "active"
 
-    def test_fetch_file_not_found(self, monkeypatch):
+    def test_fetch_file_not_found(self, tmp_path, monkeypatch):
         """Test handling of missing file."""
-        monkeypatch.chdir(Path("/tmp"))
+        # Create a temp directory without data subdirectory
+        empty_dir = tmp_path / "empty"
+        empty_dir.mkdir()
+        monkeypatch.chdir(empty_dir)
         connector = CRMConnector()
         
         with pytest.raises(FileNotFoundError):

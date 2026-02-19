@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from random import choice, randint
 from typing import Any, Dict, Iterable, List, Sequence
 
 
 def generate_customers(count: int = 50) -> List[Dict[str, Any]]:
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     customers: List[Dict[str, Any]] = []
     for i in range(1, count + 1):
         created_at = now - timedelta(days=randint(0, 365))
@@ -27,7 +27,7 @@ def generate_customers(count: int = 50) -> List[Dict[str, Any]]:
 def generate_support_tickets(
     count: int = 50, customer_ids: Iterable[int] | None = None
 ) -> List[Dict[str, Any]]:
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     ids: Sequence[int] = list(customer_ids) if customer_ids is not None else list(
         range(1, count + 1)
     )
@@ -50,7 +50,7 @@ def generate_support_tickets(
 def generate_analytics_days(
     count: int = 30, metric: str = "daily_active_users"
 ) -> List[Dict[str, Any]]:
-    today = datetime.utcnow().date()
+    today = datetime.now(UTC).date()
     points: List[Dict[str, Any]] = []
     for i in range(count):
         day = today - timedelta(days=i)
