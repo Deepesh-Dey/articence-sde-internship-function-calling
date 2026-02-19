@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Universal Data Connector</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Universal Data Connector</h1>
+      <p class="subtitle">Upload data, query, and get AI analysis with voice</p>
+      <div class="api-status" id="apiStatus">
+        <span class="status-dot"></span>
+        <span>Checking API...</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Upload Custom Data</h2>
+        <p class="card-desc">Upload JSON or CSV to replace sample data.</p>
+        <div class="form-row">
+          <label>Data Type</label>
+          <select id="uploadSource">
+            <option value="crm">CRM Customers</option>
+            <option value="support">Support Tickets</option>
+            <option value="analytics">Analytics</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>File (JSON or CSV)</label>
+          <input type="file" id="uploadFile" accept=".json,.csv,application/json,text/csv">
+        </div>
+        <button class="btn btn-primary" id="uploadBtn">
+          <span class="btn-text">Upload</span>
+          <span class="btn-loading" style="display:none">Uploading...</span>
+        </button>
+      </section>
+
+      <section class="card">
+        <h2>Ask with Voice</h2>
+        <p class="card-desc">Speak your question and get AI analysis from Hugging Face models.</p>
+        <div class="form-row">
+          <label>Model</label>
+          <select id="modelType">
+            <option value="auto">Auto (Table Q&A)</option>
+            <option value="table_qa">Table Q&A</option>
+            <option value="summarization">Summarization</option>
+            <option value="text_qa">Text Q&A</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Your Question (or use voice)</label>
+          <textarea id="analyzeQuery" rows="2" placeholder="e.g. What are the key trends?">What are the main insights from my data?</textarea>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-voice" id="voiceInputBtn">
+            <span class="btn-text">Voice input</span>
+          </button>
+          <button class="btn btn-secondary" id="speakResponseBtn" disabled>Speak response</button>
+          <button class="btn btn-primary" id="analyzeBtn">
+            <span class="btn-text">Analyze with AI</span>
+            <span class="btn-loading" style="display:none">Analyzing...</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Query Data</h2>
+        <p class="card-desc">Fetch data from CRM, support tickets, or analytics.</p>
+        <div class="form-row">
+          <label>Data Source</label>
+          <select id="dataSource">
+            <option value="crm">CRM Customers</option>
+            <option value="support">Support Tickets</option>
+            <option value="analytics">Analytics</option>
+          </select>
+        </div>
+        <div class="form-grid">
+          <div class="form-row" id="statusRow">
+            <label>Status</label>
+            <select id="statusFilter"><option value="">All</option></select>
+          </div>
+          <div class="form-row" id="priorityRow" style="display:none">
+            <label>Priority</label>
+            <select id="priorityFilter">
+              <option value="">All</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div class="form-row" id="metricRow" style="display:none">
+            <label>Metric</label>
+            <input type="text" id="metricFilter" placeholder="e.g. daily_active_users">
+          </div>
+        </div>
+        <div class="form-row checkbox-row">
+          <label>
+            <input type="checkbox" id="voiceMode" checked>
+            Voice mode (limit 10 items)
+          </label>
+        </div>
+        <button class="btn btn-primary" id="fetchDataBtn">
+          <span class="btn-text">Fetch Data</span>
+          <span class="btn-loading" style="display:none">Loading...</span>
+        </button>
+      </section>
+
+      <section class="card result-card">
+        <div class="result-header">
+          <h2>Results</h2>
+          <div class="result-meta" id="resultMeta"></div>
+        </div>
+        <div class="result-content" id="resultContent">
+          <p class="placeholder">Upload data, run analysis, or fetch to see results.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toastContainer"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

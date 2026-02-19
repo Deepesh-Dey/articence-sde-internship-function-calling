@@ -235,18 +235,51 @@ Good luck! We're excited to see what you build. 🚀
 
 ## Run locally
 
+### 1. Install dependencies
+
 ```bash
 pip install -r requirements.txt
+```
+
+### 2. Start the server
+
+```bash
 uvicorn app.main:app --reload
 ```
+
+### 3. Set up Hugging Face (optional, for AI analysis)
+
+Create a `.env` file from the example and add your Hugging Face token:
+
+```bash
+cp .env.example .env
+# Edit .env and set HUGGINGFACE_API_KEY=your_token
+# Get a token at https://huggingface.co/settings/tokens
+```
+
+### 4. Open the application
+
+- **Web UI:** http://localhost:8000
+- **API Docs:** http://localhost:8000/docs
+
+The web UI lets you:
+- **Upload custom data** – Replace sample data with your own JSON or CSV
+- **Voice input** – Speak your question (browser Speech API)
+- **Hugging Face analysis** – Summarization, Table Q&A, and Text Q&A models
+- **Speak response** – Hear the analysis via text-to-speech
+- **Query data** – Fetch CRM, support, analytics with filters
+
+### Expected data formats for upload
+
+- **CRM:** `customer_id`, `name`, `email`, `created_at`, `status` (active/inactive)
+- **Support:** `ticket_id`, `customer_id`, `subject`, `priority` (low/medium/high), `created_at`, `status` (open/closed)
+- **Analytics:** `metric`, `date`, `value`
 
 ## Docker
 
 ```bash
 docker-compose up --build
 ```
-
-Visit: http://localhost:8000/docs
 
 ## LLM Function Calling Integration
 
