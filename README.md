@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # Universal Data Connector
 
@@ -248,3 +249,6 @@ docker-compose up --build
 ```
 
 Visit: http://localhost:8000/docs
+=======
+# articence-sde-internship-function-calling
+>>>>>>> d0d0e0ce4af176a49b44dc4337db4e8c9e601e68
