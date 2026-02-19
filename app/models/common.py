@@ -9,6 +9,7 @@ class Metadata(BaseModel):
     data_freshness: str
     data_type: Optional[str] = None
     source: Optional[str] = None
+    context_message: Optional[str] = None
 
 
 class DataResponse(BaseModel):
