@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-
 # Universal Data Connector
 
 ## 🎯 Assignment Overview
@@ -249,3 +247,73 @@ docker-compose up --build
 ```
 
 Visit: http://localhost:8000/docs
+
+## LLM Function Calling Integration
+
+### Get tool definitions
+
+```bash
+# OpenAI format (for Chat Completions API)
+curl "http://localhost:8000/llm/tools?provider=openai"
+
+# Anthropic format
+curl "http://localhost:8000/llm/tools?provider=anthropic"
+```
+
+Use the returned `tools` array in the `tools` parameter when calling OpenAI or Anthropic.
+
+### Execute a tool call
+
+When your LLM returns a tool_use block, call the query endpoint:
+
+```bash
+curl -X POST http://localhost:8000/llm/query \
+  -H "Content-Type: application/json" \
+  -d '{"tool": "get_crm_data", "arguments": {"status": "active", "voice": true}}'
+```
+
+Available tools: `get_crm_data`, `get_support_tickets`, `get_analytics`
+
+### Example script
+
+```bash
+python examples/llm_integration_example.py
+```
+
+Requires the API to be running. See the script for usage patterns.
+
+## Testing
+
+Run the test suite:
+
+```bash
+pytest
+```
+
+Run specific test files:
+
+```bash
+pytest tests/test_connectors.py
+pytest tests/test_business_rules.py
+pytest tests/test_api.py
+pytest tests/test_data_service.py
+```
+
+Run with verbose output:
+
+```bash
+pytest -v
+```
+
+## Logging
+
+The application uses structured logging. Logs are output to stdout by default. To configure logging:
+
+- Set `LOG_LEVEL` environment variable (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+- Set `LOG_FILE` environment variable to write logs to a file
+
+Example:
+
+```bash
+LOG_LEVEL=DEBUG uvicorn app.main:app --reload
+```
