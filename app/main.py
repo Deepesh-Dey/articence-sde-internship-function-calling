@@ -30,3 +30,6 @@ if static_dir.exists():
     @app.get("/")
     def serve_index():
         return FileResponse(static_dir / "index.html")
+
+from app.routers.natural_query import router as natural_router
+app.include_router(natural_router)

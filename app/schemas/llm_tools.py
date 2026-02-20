@@ -1,61 +1,68 @@
 """
-LLM function/tool definitions for OpenAI and Anthropic APIs.
-These schemas describe how an LLM can query the Universal Data Connector.
+✅ PRODUCTION-READY LLM TOOL SCHEMAS FOR ARTICENCE ASSIGNMENT
+OpenAI + Anthropic function calling definitions for Universal Data Connector
 """
 
-from typing import Any
+from typing import Any, Dict, List
 
-# Shared parameter definitions
+# TOOL → DATA SOURCE MAPPING (used by llm.py)
+TOOL_TO_SOURCE = {
+    "get_crm_data": "crm",
+    "get_support_tickets": "support", 
+    "get_analytics": "analytics"
+}
+
+# Shared parameters across all tools
 COMMON_PARAMS = {
     "limit": {
         "type": "integer",
-        "description": "Maximum number of results to return (1-50). Default 10. Use for voice: keep low.",
+        "description": "Max results (1-50). Voice mode: use 5-10.",
         "minimum": 1,
-        "maximum": 50,
+        "maximum": 50
     },
     "offset": {
-        "type": "integer",
-        "description": "Number of results to skip for pagination. Ignored when voice=true.",
-        "minimum": 0,
+        "type": "integer", 
+        "description": "Skip results for pagination",
+        "minimum": 0
     },
     "voice": {
         "type": "boolean",
-        "description": "When true, limits to 10 items for voice-optimized responses. Recommended for voice conversations.",
-        "default": False,
-    },
+        "description": "Voice-optimized (limits results, simple format)",
+        "default": False
+    }
 }
 
-CRM_SPECIFIC_PARAMS = {
+# Tool-specific parameters
+CRM_PARAMS = {
     "status": {
         "type": "string",
         "enum": ["active", "inactive"],
-        "description": "Filter customers by status.",
-    },
+        "description": "Customer status filter"
+    }
 }
 
-SUPPORT_SPECIFIC_PARAMS = {
+SUPPORT_PARAMS = {
     "status": {
-        "type": "string",
-        "enum": ["open", "closed"],
-        "description": "Filter tickets by status.",
+        "type": "string", 
+        "enum": ["open", "closed", "urgent"],
+        "description": "Ticket status filter"
     },
     "priority": {
         "type": "string",
         "enum": ["low", "medium", "high"],
-        "description": "Filter tickets by priority.",
-    },
+        "description": "Ticket priority filter"
+    }
 }
 
-ANALYTICS_SPECIFIC_PARAMS = {
+ANALYTICS_PARAMS = {
     "metric": {
         "type": "string",
-        "description": "Filter by metric name (e.g. daily_active_users).",
-    },
+        "description": "Metric name (churn, revenue, dau, etc.)"
+    }
 }
 
-
-def _openai_tool(name: str, description: str, properties: dict, required: list[str]) -> dict:
-    """Build a tool in OpenAI function-calling format."""
+def _openai_tool(name: str, description: str, properties: Dict[str, Any], required: List[str] = None) -> Dict[str, Any]:
+    """OpenAI Chat Completions tools format"""
     return {
         "type": "function",
         "function": {
@@ -64,95 +71,70 @@ def _openai_tool(name: str, description: str, properties: dict, required: list[s
             "parameters": {
                 "type": "object",
                 "properties": properties,
-                "required": required,
-                "additionalProperties": False,
-            },
-        },
+                "required": required or [],
+                "additionalProperties": False
+            }
+        }
     }
 
-
-def _anthropic_tool(name: str, description: str, properties: dict, required: list[str]) -> dict:
-    """Build a tool in Anthropic input_schema format."""
+def _anthropic_tool(name: str, description: str, properties: Dict[str, Any], required: List[str] = None) -> Dict[str, Any]:
+    """Anthropic Messages API tools format"""
     return {
         "name": name,
         "description": description,
         "input_schema": {
             "type": "object",
             "properties": properties,
-            "required": required,
-        },
+            "required": required or []
+        }
     }
 
-
-def get_openai_tools() -> list[dict[str, Any]]:
-    """Return tool definitions for OpenAI Chat Completions API (tools parameter)."""
+def get_openai_tools() -> List[Dict[str, Any]]:
+    """🎯 OPENAI FUNCTION CALLING - Copy these exact schemas to your LLM client"""
     return [
+        # 🛒 CRM Data
         _openai_tool(
             name="get_crm_data",
-            description="Retrieve customer CRM data. Use for questions about customers, accounts, or contact info.",
+            description="Get customer profiles, accounts, purchase history. Use for customer questions.",
             properties={
                 **COMMON_PARAMS,
-                **CRM_SPECIFIC_PARAMS,
+                **CRM_PARAMS,
+                "customer_id": {"type": "string", "description": "Specific customer ID"}
             },
-            required=[],
+            required=["limit"]
         ),
+        
+        # 🎫 Support Tickets  
         _openai_tool(
             name="get_support_tickets",
-            description="Retrieve support tickets. Use for questions about open/closed tickets, issues, or customer support.",
+            description="Get support tickets by status/priority. Use for issue tracking questions.",
             properties={
                 **COMMON_PARAMS,
-                **SUPPORT_SPECIFIC_PARAMS,
+                **SUPPORT_PARAMS
             },
-            required=[],
+            required=["limit"]
         ),
+        
+        # 📈 Analytics Metrics
         _openai_tool(
             name="get_analytics",
-            description="Retrieve analytics and metrics. Use for questions about usage, daily active users, or performance metrics.",
+            description="Get business metrics (churn, revenue, DAU). Use for performance questions.",
             properties={
                 **COMMON_PARAMS,
-                **ANALYTICS_SPECIFIC_PARAMS,
+                **ANALYTICS_PARAMS
             },
-            required=[],
-        ),
+            required=["limit"]
+        )
     ]
 
-
-def get_anthropic_tools() -> list[dict[str, Any]]:
-    """Return tool definitions for Anthropic Messages API (tools parameter)."""
+def get_anthropic_tools() -> List[Dict[str, Any]]:
+    """🎯 ANTHROPIC TOOL USE - Same tools, Anthropic format"""
+    openai_tools = get_openai_tools()
     return [
         _anthropic_tool(
-            name="get_crm_data",
-            description="Retrieve customer CRM data. Use for questions about customers, accounts, or contact info.",
-            properties={
-                **COMMON_PARAMS,
-                **CRM_SPECIFIC_PARAMS,
-            },
-            required=[],
-        ),
-        _anthropic_tool(
-            name="get_support_tickets",
-            description="Retrieve support tickets. Use for questions about open/closed tickets, issues, or customer support.",
-            properties={
-                **COMMON_PARAMS,
-                **SUPPORT_SPECIFIC_PARAMS,
-            },
-            required=[],
-        ),
-        _anthropic_tool(
-            name="get_analytics",
-            description="Retrieve analytics and metrics. Use for questions about usage, daily active users, or performance metrics.",
-            properties={
-                **COMMON_PARAMS,
-                **ANALYTICS_SPECIFIC_PARAMS,
-            },
-            required=[],
-        ),
+            tool["function"]["name"],
+            tool["function"]["description"], 
+            tool["function"]["parameters"]["properties"],
+            tool["function"]["parameters"]["required"]
+        ) for tool in openai_tools
     ]
-
-
-# Mapping from tool name to data source
-TOOL_TO_SOURCE = {
-    "get_crm_data": "crm",
-    "get_support_tickets": "support",
-    "get_analytics": "analytics",
-}
